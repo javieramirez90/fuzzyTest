@@ -1,0 +1,22 @@
+<div class="container" style="margin-top:100px"> 
+  <div class="row">
+  <form class="col s12">
+    <div class="row">
+      <div class="input-field col s6">
+        <i class="material-icons prefix">search</i>
+        <textarea id="icon_prefix2" class="materialize-textarea"></textarea>
+        <label for="icon_prefix2">Transaction</label>
+      </div>
+    </div>
+  </form>
+</div>
+
+<ul class="collection">
+  <li *ngFor="let transaction of transactions" class="collection-item avatar">
+      <i class="material-icons circle blue">payment</i>
+      <span><b>Credit Card: **** **** **** </b></span><p id="credit-card" [outerHTML]="transaction.card_last_four"></p><br>
+      <span><b>Amount: </b> $</span><p id="amount" [outerHTML]="transaction.amount"></p><br>
+      <span><b>Date: </b></span><p id="date" [outerHTML]="transaction.date"></p>
+</li>
+</ul>
+</div>
