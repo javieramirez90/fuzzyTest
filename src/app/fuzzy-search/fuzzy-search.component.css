@@ -1,0 +1,10 @@
+
+.orangeClip {
+  background-color: #FC7522;
+}
+
+.collection li:hover {
+  width: 700px;
+  background-color: orange;
+  font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+}

@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FuzzySearchComponent implements OnInit {
   
-  transactions = [
+  transactions:any = [
     { amount: 112.98, date: '27-01-2018T12:34', card_last_four: '2544' },
     { amount: 0.45, date: '01-12-2017T9:36', card_last_four: '4434' },
     { amount: 95.99, date: '23-11-2017T14:34', card_last_four: '3011' },
@@ -19,18 +19,30 @@ export class FuzzySearchComponent implements OnInit {
     { amount: 4.69, date: '01-02-2018T02:34', card_last_four: '8488' },
     { amount: 1111.11, date: '15-01-2018T21:34', card_last_four: '9912' }
   ];
+  otherTransactions = JSON.stringify(this.transactions);
+  filtered = this.transactions;
+  mySearch;
+  charByChar;
+  query;
+  
 
   constructor() { }
 
   ngOnInit() {
     this.sortingDates();
   }
+
+  createRegExp(input) {
+    return `.*${input}`;
+  }
   
   sortingDates(){
     
     for(var i = 0; i < this.transactions.length; i++){
-      let nDate = this.transactions[i].date;
-      let newformat = nDate.split("T")
+      let nDate: any = this.transactions[i].date;
+      console.log(nDate);
+      let newformat: any = nDate.split("T")
+      console.log(newformat);
       let dateOnly = newformat[0].split("-");
       let day = parseInt(dateOnly[0]);
       let month = parseInt(dateOnly[1]);
@@ -40,6 +52,10 @@ export class FuzzySearchComponent implements OnInit {
       let min = parseInt(completeHour[1]);
       
       let dateData: any = new Date(year, month - 1, day, hour, min, 0, 0);
+      console.log(typeof(dateData));
+      let pack = String(dateData);
+      console.log(typeof(pack));
+
       this.transactions[i].date= dateData;
     }
     
@@ -53,5 +69,56 @@ export class FuzzySearchComponent implements OnInit {
     
     this.transactions.sort(compare);
 
-}
+    for(var i = 0; i < this.transactions.length; i++){
+      let newDate = String(this.transactions[i].date);
+      this.transactions[i].date = newDate;
+    }
+  
+    console.log(this.transactions);
+    console.log(typeof(this.transactions[0].date));
+    // this.transactions = JSON.stringify(this.transactions);
+  };
+  
+  
+
+
+  ///////////////////
+
+
+
+  toFilter() {
+    this.charByChar = this.mySearch.replace(/\ /g, '').toUpperCase().split('');
+    let response = '';
+    this.charByChar.map(input => {
+      response += this.createRegExp(input);
+    });
+    response += '.*';
+    return response;
+  }
+
+  bolding(text: any, input) {
+    if (String(text).indexOf(input) !== -1) {
+      const turnToArray = String(text).split('');
+      turnToArray[String(text).indexOf(input)] = `<strong class="highlight">${input}</strong>`;
+      text = turnToArray.join('');
+     }
+     return text;
+  }
+
+  fuzzy() {
+    this.transactions = JSON.parse(this.otherTransactions);
+    this.query = this.toFilter();
+    const regexp = new RegExp(this.query);
+    this.transactions = this.transactions.filter((transaction: any) => {
+      this.charByChar = this.mySearch.replace(/\ /g, '').toUpperCase().split('');
+      this.charByChar.forEach(input => {
+        transaction.date = this.bolding(transaction.date, input);
+        transaction.card_last_four = this.bolding(transaction.card_last_four, input);
+        transaction.amount = this.bolding(transaction.amount, input);
+      });
+      //Tuve una complicación  con el método de acomodo de fecha una vez que hago la consulta
+      // this.sortingDates();
+      return regexp.test(String(transaction.amount)) || regexp.test(transaction.date) || regexp.test(transaction.card_last_four) ;
+    });
+  }
 }
