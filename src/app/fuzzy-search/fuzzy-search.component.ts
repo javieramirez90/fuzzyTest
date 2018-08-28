@@ -76,6 +76,7 @@ export class FuzzySearchComponent implements OnInit {
   
     console.log(this.transactions);
     console.log(typeof(this.transactions[0].date));
+    return this.transactions;
     // this.transactions = JSON.stringify(this.transactions);
   };
   
@@ -107,6 +108,7 @@ export class FuzzySearchComponent implements OnInit {
 
   fuzzy() {
     this.transactions = JSON.parse(this.otherTransactions);
+    this.sortingDates();
     this.query = this.toFilter();
     const regexp = new RegExp(this.query);
     this.transactions = this.transactions.filter((transaction: any) => {
